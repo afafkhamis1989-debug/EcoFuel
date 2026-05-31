@@ -71,10 +71,13 @@ if st.button("Submit Feedback"):
     try:
 
         response = requests.post(
-            "https://script.google.com/macros/s/AKfycbxmRF05xGNh3isBPX44OVSH3rmxYyQY4roSrpfq99pKYytmjelNJk_9ACPLevtLny4q/exec",
+            "https://script.google.com/macros/s/AKfycbwhCBmEJh8qzV-OmPXGDN4fECCloValmTIRv1rgTjHFLUlUJ7j2I7fTTEzs8JSzO27-/exec",
             json=data,
             timeout=10
         )
+
+        st.write(f"Status Code: {response.status_code}")
+        st.write(response.text)
 
         if response.status_code == 200:
             st.success("✅ Thank you for your feedback!")
