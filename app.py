@@ -1,7 +1,6 @@
 import streamlit as st
-import pandas as pd
+import requests
 
-# Page settings
 st.set_page_config(
     page_title="Eco Fuel Live Feedback",
     page_icon="🌱",
@@ -22,7 +21,7 @@ st.write(
 
 st.divider()
 
-# Green Feedback
+# Strength
 st.subheader("🟢 Strength")
 
 strength = st.selectbox(
@@ -32,18 +31,24 @@ strength = st.selectbox(
         "Technology",
         "Growth Strategy",
         "Customer Focus",
-        "Clear Vision Statement"
+        "Clear Vision Statement",
+        "Other"
     ]
 )
 
-# Red Feedback
+other_strength = ""
+
+if strength == "Other":
+    other_strength = st.text_input("Please specify:")
+
+# Gap
 st.subheader("🔴 Gap or Missing Component")
 
 gap = st.text_area(
     "Write a gap or missing component:"
 )
 
-# Yellow Feedback
+# Suggestion
 st.subheader("🟡 Suggestion for Improvement")
 
 suggestion = st.text_area(
@@ -52,20 +57,32 @@ suggestion = st.text_area(
 
 st.divider()
 
-# Submit button
+# Submit
 if st.button("Submit Feedback"):
 
-    st.success("✅ Thank you for your feedback!")
+    final_strength = other_strength if strength == "Other" else strength
 
-    # Create feedback table
-    results = pd.DataFrame({
-        "Category": ["Strength", "Gap", "Suggestion"],
-        "Feedback": [strength, gap, suggestion]
-    })
+    data = {
+        "strength": final_strength,
+        "gap": gap,
+        "suggestion": suggestion
+    }
 
-    st.subheader("📊 Submitted Feedback")
+    try:
 
-    st.dataframe(results, use_container_width=True)
+        response = requests.post(
+            "https://script.google.com/macros/s/AKfycbxmRF05xGNh3isBPX44OVSH3rmxYyQY4roSrpfq99pKYytmjelNJk_9ACPLevtLny4q/exec",
+            json=data,
+            timeout=10
+        )
+
+        if response.status_code == 200:
+            st.success("✅ Thank you for your feedback!")
+        else:
+            st.error("❌ Failed to submit feedback.")
+
+    except Exception as e:
+        st.error(f"❌ Error: {e}")
 
 st.divider()
 
